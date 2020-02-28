@@ -1,0 +1,1421 @@
+{
+  "title": "JSON schema for OctoberCMS form fields",
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$comment": "https://octobercms.com/docs/backend/forms#form-fields",
+  "type": "object",
+  "definitions": {
+    "fields": {
+      "type": "object",
+      "patternProperties": {
+        "^[^\\s]*$": {
+          "description": "Model field name",
+          "$comment": "https://octobercms.com/docs/backend/forms#form-field-options",
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "label": {
+              "description": "a name when displaying the form field to the user",
+              "type": "string"
+            },
+            "type": {
+              "description": "defines how this field should be rendered",
+              "default": "text",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "text",
+                    "number",
+                    "password",
+                    "email",
+                    "textarea",
+                    "dropdown",
+                    "radio",
+                    "balloon-selector",
+                    "checkbox",
+                    "checkboxlist",
+                    "switch",
+                    "section",
+                    "partial",
+                    "hint"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "codeeditor",
+                    "colorpicker",
+                    "datatable",
+                    "datepicker",
+                    "fileupload",
+                    "markdown",
+                    "mediafinder",
+                    "nestedform",
+                    "recordfinder",
+                    "relation",
+                    "repeater",
+                    "richeditor",
+                    "taglist"
+                  ]
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "span": {
+              "description": "aligns the form field to one side. The parameter storm allows you to display the form as a Bootstrap grid, using the cssClass property, for example, cssClass: col-xs-4.",
+              "type": "string",
+              "enum": [
+                "auto",
+                "left",
+                "right",
+                "storm",
+                "full"
+              ],
+              "default": "full"
+            },
+            "size": {
+              "description": "specifies a field size for fields that use it, for example, the textarea field",
+              "type": "string",
+              "enum": [
+                "tiny",
+                "small",
+                "large",
+                "huge",
+                "giant"
+              ]
+            },
+            "placeholder": {
+              "description": "if the field supports a placeholder value",
+              "type": "string"
+            },
+            "comment": {
+              "description": "places a descriptive comment below the field",
+              "type": "string"
+            },
+            "commentAbove": {
+              "description": "places a comment above the field",
+              "type": "string"
+            },
+            "commentHtml": {
+              "description": "allow HTML markup inside the comment",
+              "type": "boolean"
+            },
+            "default": {
+              "description": "specifies the default value for the field"
+            },
+            "defaultFrom": {
+              "description": "takes the default value from the value of another field",
+              "type": "string"
+            },
+            "tab": {
+              "description": "assigns the field to a tab",
+              "type": "string"
+            },
+            "cssClass": {
+              "description": "assigns a CSS class to the field container",
+              "type": "string"
+            },
+            "readOnly": {
+              "description": "prevents the field from being modified",
+              "type": "boolean"
+            },
+            "disabled": {
+              "description": "prevents the field from being modified and excludes it from the saved data",
+              "type": "boolean"
+            },
+            "hidden": {
+              "description": "hides the field from the view and excludes it from the saved data",
+              "type": "boolean"
+            },
+            "stretch": {
+              "description": "specifies if this field stretches to fit the parent height",
+              "type": "boolean"
+            },
+            "context": {
+              "description": "specifies what context should be used when displaying the field. Context can also be passed by using an @ symbol in the field name, for example, name@update.",
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "create",
+                      "update",
+                      "preview"
+                    ]
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "uniqueItems": true
+            },
+            "dependsOn": {
+              "description": "an array of other field names this field depends on, when the other fields are modified, this field will update",
+              "type": [
+                "array",
+                "string"
+              ]
+            },
+            "trigger": {
+              "description": "specify conditions for this field using trigger events",
+              "type": "object",
+              "properties": {
+                "action": {
+                  "description": "defines the action applied to this field when the condition is met",
+                  "type": "string",
+                  "enum": [
+                    "show",
+                    "hide",
+                    "enable",
+                    "disable",
+                    "empty"
+                  ]
+                },
+                "field": {
+                  "description": "defines the other field name that will trigger the action. Normally the field name refers to a field in the same level form. For example, if this field is in a repeater widget, only fields in that same repeater widget will be checked. However, if the field name is preceded by a caret symbol ^ like: ^parent_field, it will refer to a repeater widget or form one level higher than the field itself. Additionally, if more than one caret ^ is used, it will refer that many levels higher: ^^grand_parent_field, ^^^grand_grand_parent_field, etc.",
+                  "type": "string"
+                },
+                "condition": {
+                  "description": "determines the condition the specified field should satisfy for the condition to be considered \"true\". Supported values: checked, unchecked, value[somevalue]",
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "checked",
+                        "unchecked",
+                        "value[somevalue]"
+                      ]
+                    },
+                    {
+                      "type": "string",
+                      "pattern": "^value\\[.*\\]$"
+                    }
+                  ]
+                }
+              }
+            },
+            "preset": {
+              "description": "allows the field value to be initially set by the value of another field, converted using the input preset converter",
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "description": "defines the other field name to source the value from",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "specifies the conversion type",
+                      "type": "string",
+                      "enum": [
+                        "exact",
+                        "slug",
+                        "url",
+                        "camel",
+                        "file"
+                      ]
+                    },
+                    "prefixInput": {
+                      "description": "optional, prefixes the converted value with the value found in the supplied input element using a CSS selector",
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "description": "value can be a string that refers to the field only, the type option will then default to slug",
+                  "type": "string"
+                }
+              ]
+            },
+            "required": {
+              "description": "places a red asterisk next to the field label to indicate it is required (make sure to setup validation on the model as this is not enforced by the form controller)",
+              "type": "boolean"
+            },
+            "attributes": {
+              "description": "specify custom HTML attributes to add to the form field element",
+              "type": "object",
+              "patternProperties": {
+                ".+": {
+                  "type": "string"
+                }
+              }
+            },
+            "containerAttributes": {
+              "description": "specify custom HTML attributes to add to the form field container",
+              "type": "object",
+              "patternProperties": {
+                ".+": {
+                  "type": "string"
+                }
+              }
+            },
+            "permissions": {
+              "description": "the permissions that the current backend user must have in order for the field to be used. Supports either a string for a single permission or an array of permissions of which only one is needed to grant access.",
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "anyOf": [
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "number"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "step": {
+                    "description": "test",
+                    "type": "integer"
+                  },
+                  "min": {
+                    "description": "test",
+                    "type": "integer"
+                  },
+                  "max": {
+                    "description": "test",
+                    "type": "integer"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "dropdown"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "options": {
+                    "description": "define options list",
+                    "anyOf": [
+                      {
+                        "description": "define drop-down options",
+                        "type": "object",
+                        "patternProperties": {
+                          ".+": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      {
+                        "description": "uses a specific method declared in the model's class",
+                        "type": "string"
+                      }
+                    ]
+                  },
+                  "emptyOption": {
+                    "description": "define an empty option that can be reselected",
+                    "type": "string"
+                  },
+                  "placeholder": {
+                    "description": "define a \"one-way\" empty option that cannot be reselected",
+                    "type": "string"
+                  },
+                  "showSearch": {
+                    "description": "by default the dropdown has a searching feature, allowing quick selection of a value. This can be disabled by setting this option to false",
+                    "type": "boolean",
+                    "default": true
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "radio",
+                      "balloon-selector",
+                      "checkboxlist"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "options": {
+                    "description": "define options",
+                    "anyOf": [
+                      {
+                        "description": "define drop-down options",
+                        "type": "object",
+                        "patternProperties": {
+                          ".+": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      {
+                        "description": "uses a specific method declared in the model's class",
+                        "type": "string"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "switch"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "on": {
+                    "type": "string"
+                  },
+                  "off": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "partial",
+                      "hint"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "path": {
+                    "description": "partial view",
+                    "type": "string",
+                    "examples": [
+                      "$/acme/blog/models/comments/_content_field.htm"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "codeeditor"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "language": {
+                    "description": "code language",
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "php",
+                          "css",
+                          "js",
+                          "html"
+                        ],
+                        "default": "php"
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ]
+                  },
+                  "showGutter": {
+                    "description": "shows a gutter with line numbers",
+                    "type": "boolean",
+                    "default": true
+                  },
+                  "wrapWords": {
+                    "description": "breaks long lines on to a new line",
+                    "type": "boolean",
+                    "default": true
+                  },
+                  "fontSize": {
+                    "description": "the text font size",
+                    "type": "number",
+                    "default": 12
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "colorpicker"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "availableColors": {
+                    "description": "list of available colors",
+                    "type": [
+                      "array",
+                      "string"
+                    ]
+                  },
+                  "allowEmpty": {
+                    "description": "allows empty input value",
+                    "type": "boolean",
+                    "default": false
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "datatable"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "adding": {
+                    "description": "allow records to be added to the data table",
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "btnAddRowLabel": {
+                    "description": "defines a custom label for the \"Add Row Above\" button",
+                    "type": "string"
+                  },
+                  "btnAddRowBelowLabel": {
+                    "description": "defines a custom label for the \"Add Row Below\" button",
+                    "type": "string"
+                  },
+                  "btnDeleteRowLabel": {
+                    "description": "defines a custom label for the \"Delete Row\" button",
+                    "type": "string"
+                  },
+                  "columns": {
+                    "description": "an array representing the column configuration of the data table",
+                    "$ref": "#/definitions/datatableColumns"
+                  },
+                  "deleting": {
+                    "description": "allow records to be deleted from the data table",
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "dynamicHeight": {
+                    "description": "if true, the data table's height will extend or shrink depending on the records added, up to the maximum size defined by the height configuration value",
+                    "type": "string",
+                    "default": false
+                  },
+                  "fieldName": {
+                    "description": "defines a custom field name to use in the POST data sent from the data table. Leave blank to use the default field alias",
+                    "type": "string"
+                  },
+                  "height": {
+                    "description": "the data table's height, in pixels. If set to false, the data table will stretch to fit the field container",
+                    "type": [
+                      "integer",
+                      "boolean"
+                    ]
+                  },
+                  "keyFrom": {
+                    "description": "the data attribute to use for keying each record. This should usually be set to id",
+                    "type": "string"
+                  },
+                  "postbackHandlerName": {
+                    "description": "defines a custom post-back handler to use when saving the data from the data table",
+                    "type": "string"
+                  },
+                  "recordsPerPage": {
+                    "description": "the number of records to show per page. If set to false, the pagination will be disabled",
+                    "type": [
+                      "integer",
+                      "boolean"
+                    ]
+                  },
+                  "searching": {
+                    "description": "allow records to be searched via a search box",
+                    "default": false
+                  },
+                  "toolbar": {
+                    "description": "an array representing the toolbar configuration of the data table",
+                    "type": "array"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "datepicker"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "mode": {
+                    "description": "the expected result, either date, datetime or time",
+                    "type": "string",
+                    "enum": [
+                      "date",
+                      "datetime",
+                      "time"
+                    ],
+                    "default": "datetime"
+                  },
+                  "format": {
+                    "description": "provide an explicit date display format",
+                    "type": "string",
+                    "examples": [
+                      "Y-m-d"
+                    ]
+                  },
+                  "minDate": {
+                    "description": "the minimum/earliest date that can be selected",
+                    "type": "string",
+                    "default": "2000-01-01"
+                  },
+                  "maxDate": {
+                    "description": "the maximum/latest date that can be selected",
+                    "type": "string",
+                    "default": "2020-12-31"
+                  },
+                  "firstDay": {
+                    "description": "the first day of the week. Default: 0 (Sunday)",
+                    "type": "integer",
+                    "default": 0
+                  },
+                  "showWeekNumber": {
+                    "description": "show week numbers at head of row",
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "ignoreTimezone": {
+                    "description": "display datetime exactly as it is stored, ignoring October's and the backend user's specified timezones",
+                    "type": "boolean"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "fileupload"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "mode": {
+                    "description": "the expected file type, either file or image",
+                    "type": "string",
+                    "enum": [
+                      "file",
+                      "image"
+                    ],
+                    "default": "image"
+                  },
+                  "fileTypes": {
+                    "description": "file extensions that are accepted by the uploader, optional. Eg: zip,txt",
+                    "type": "string",
+                    "examples": [
+                      "zip,txt"
+                    ]
+                  },
+                  "mimeTypes": {
+                    "description": "MIME types that are accepted by the uploader, either as file extension or fully qualified name, optional. Eg: bin,txt",
+                    "type": "string",
+                    "examples": [
+                      "bin,txt"
+                    ]
+                  },
+                  "maxFilesize": {
+                    "description": "file size in Mb that are accepted by the uploader, optional. Default: from \"upload_max_filesize\" param value",
+                    "type": "number"
+                  },
+                  "useCaption": {
+                    "description": "allows a title and description to be set for the file",
+                    "type": "boolean",
+                    "default": true
+                  },
+                  "attachOnUpload": {
+                    "description": "Automatically attaches the uploaded file on upload if the parent record exists instead of using deferred binding to attach on save of the parent record",
+                    "type": "boolean",
+                    "default": false
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "fileupload"
+                    ]
+                  },
+                  "mode": {
+                    "enum": [
+                      "image"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "imageWidth": {
+                    "description": "resize image to this width",
+                    "type": "number"
+                  },
+                  "imageHeight": {
+                    "description": "resize image to this height",
+                    "type": "number"
+                  },
+                  "thumbOptions": {
+                    "description": "options to pass to the thumbnail generating method for the file",
+                    "$comment": "https://octobercms.com/docs/database/attachments#viewing-attachments",
+                    "type": "object",
+                    "properties": {
+                      "mode": {
+                        "description": "specify how the image should be resized",
+                        "type": "string",
+                        "enum": [
+                          "auto",
+                          "exact",
+                          "portrait",
+                          "landscape",
+                          "crop",
+                          "fit"
+                        ],
+                        "default": "auto"
+                      },
+                      "quality": {
+                        "description": "image quality compression (0 - 100)",
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100,
+                        "default": 90
+                      },
+                      "interlace": {
+                        "description": "specify if the generated image should be interlaced",
+                        "type": "boolean",
+                        "default": false
+                      },
+                      "extension": {
+                        "type": "string",
+                        "enum": [
+                          "auto",
+                          "jpg",
+                          "png",
+                          "gif"
+                        ],
+                        "default": "jpg"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "fileupload"
+                    ]
+                  },
+                  "mode": {
+                    "enum": [
+                      "file"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "prompt": {
+                    "description": "text to display for the upload button",
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "markdown"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "mode": {
+                    "description": "the expected view mode, either tab or split",
+                    "type": "string",
+                    "enum": [
+                      "tab",
+                      "split"
+                    ],
+                    "default": "tab"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "mediafinder"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "mode": {
+                    "description": "the expected file type, either file or image",
+                    "type": "string",
+                    "enum": [
+                      "file",
+                      "image"
+                    ],
+                    "default": "file"
+                  },
+                  "prompt": {
+                    "description": "text to display when there is no item selected. The %s character represents the media manager icon",
+                    "type": "string"
+                  },
+                  "imageWidth": {
+                    "description": "text to display when there is no item selected. The %s character represents the media manager icon",
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "mediafinder"
+                    ]
+                  },
+                  "mode": {
+                    "enum": [
+                      "image"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "imageWidth": {
+                    "description": "preview image to this width",
+                    "type": "number"
+                  },
+                  "imageHeight": {
+                    "description": "preview image to this height",
+                    "type": "number"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "nestedform"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "form": {
+                    "type": "object",
+                    "properties": {
+                      "fields": {
+                        "$ref": "#/definitions/fields"
+                      },
+                      "tabs": {
+                        "description": "Primary tabs",
+                        "$ref": "#/definitions/tabs"
+                      },
+                      "secondaryTabs": {
+                        "description": "secondary tabs",
+                        "$ref": "#/definitions/tabs"
+                      }
+                    }
+                  },
+                  "usePanelStyles": {
+                    "description": "defines if a panel like look is applied or not",
+                    "type": "boolean",
+                    "default": true
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "recordfinder"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "list": {
+                    "description": "configuration array or reference to a list column definition file, see list columns",
+                    "$comment": "https://octobercms.com/docs/backend/lists#list-columns",
+                    "type": [
+                      "string",
+                      "array"
+                    ]
+                  },
+                  "keyFrom": {
+                    "description": "the name of column to use in the relation used for key",
+                    "type": "string",
+                    "default": "id"
+                  },
+                  "nameFrom": {
+                    "description": "the column name to use in the relation used for displaying the name",
+                    "type": "string",
+                    "default": "name"
+                  },
+                  "descriptionFrom": {
+                    "description": "the column name to use in the relation used for displaying a description",
+                    "type": "string",
+                    "default": "description"
+                  },
+                  "title": {
+                    "description": "text to display in the title section of the popup",
+                    "type": "string"
+                  },
+                  "prompt": {
+                    "description": "text to display when there is no record selected. The %s character represents the search icon",
+                    "type": "string"
+                  },
+                  "recordsPerPage": {
+                    "description": "records to display per page, use 0 for no pages",
+                    "type": "integer",
+                    "default": 10
+                  },
+                  "conditions": {
+                    "description": "specifies a raw where query statement to apply to the list model query",
+                    "type": "string"
+                  },
+                  "scope": {
+                    "description": "specifies a query scope method defined in the related form model to apply to the list query always. The first argument will contain the model that the widget will be attaching its value to, i.e. the parent model.",
+                    "type": "string"
+                  },
+                  "searchMode": {
+                    "description": "defines the search strategy to either contain all words, any word or exact phrase. Supported options: all, any, exact",
+                    "type": "string",
+                    "enum": [
+                      "all",
+                      "any",
+                      "exact"
+                    ],
+                    "default": "all"
+                  },
+                  "searchScope": {
+                    "description": "specifies a query scope method defined in the related form model to apply to the search query, the first argument will contain the search term",
+                    "type": "string"
+                  },
+                  "useRelation": {
+                    "description": "Flag for using the name of the field as a relation name to interact with directly on the parent model. Disable to return just the selected model's ID",
+                    "type": "boolean",
+                    "default": true
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "recordfinder"
+                    ]
+                  },
+                  "useRelation": {
+                    "enum": [
+                      false
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "modelClass": {
+                    "description": "Class of the model to use for listing records when useRelation = false",
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "relation"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "nameFrom": {
+                    "description": "a model attribute name used for displaying the relation label",
+                    "type": "string",
+                    "default": "name"
+                  },
+                  "select": {
+                    "description": "a custom SQL select statement to use for the name",
+                    "type": "string"
+                  },
+                  "order": {
+                    "description": "an order clause to sort options by. Example: name desc",
+                    "type": "string"
+                  },
+                  "emptyOption": {
+                    "description": "text to display when there is no available selections",
+                    "type": "string"
+                  },
+                  "scope": {
+                    "description": "specifies a query scope method defined in the related form model to apply to the list query always",
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "repeater"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "form": {
+                    "type": "object",
+                    "properties": {
+                      "fields": {
+                        "$ref": "#/definitions/fields"
+                      },
+                      "tabs": {
+                        "description": "Primary tabs",
+                        "$ref": "#/definitions/tabs"
+                      },
+                      "secondaryTabs": {
+                        "description": "secondary tabs",
+                        "$ref": "#/definitions/tabs"
+                      }
+                    }
+                  },
+                  "prompt": {
+                    "description": "text to display for the create button",
+                    "type": "string",
+                    "default": "Add new item"
+                  },
+                  "titleFrom": {
+                    "description": "name of field within items to use as the title for the collapsed item",
+                    "type": "string"
+                  },
+                  "minItems": {
+                    "description": "minimum items required. Pre-displays those items when not using groups. For example if you set 'minItems: 1' the first row will be displayed and not hidden.",
+                    "type": "integer"
+                  },
+                  "maxItems": {
+                    "description": "maximum number of items to allow within the repeater",
+                    "type": "integer"
+                  },
+                  "groups": {
+                    "description": "references a group of form fields placing the repeater in group mode. An inline definition can also be used.",
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "patternProperties": {
+                          "^[^\\s]*$": {
+                            "description": "Group key",
+                            "type": "object",
+                            "required": [
+                              "fields"
+                            ],
+                            "properties": {
+                              "name": {
+                                "description": "the name of the group",
+                                "type": "string"
+                              },
+                              "description": {
+                                "description": "a brief description of the group"
+                              },
+                              "icon": {
+                                "description": "defines an icon for the group, optional",
+                                "type": "string",
+                                "pattern": "^icon-"
+                              },
+                              "fields": {
+                                "$ref": "#/definitions/fields"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "richeditor"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "toolbarButtons": {
+                    "description": "which buttons to show on the editor toolbar. \"|\" will insert a vertical separator line in the toolbar and \"-\" a horizontal one.",
+                    "type": "string",
+                    "default": "fullscreen, bold, italic, underline, strikeThrough, subscript, superscript, fontFamily, fontSize, |, color, emoticons, inlineStyle, paragraphStyle, |, paragraphFormat, align, formatOL, formatUL, outdent, indent, quote, insertHR, -, insertLink, insertImage, insertVideo, insertAudio, insertFile, insertTable, undo, redo, clearFormatting, selectAll, html"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "taglist"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "mode": {
+                    "description": "controls how the value is returned, either string, array or relation",
+                    "type": "string",
+                    "enum": [
+                      "string",
+                      "array",
+                      "relation"
+                    ],
+                    "default": "string"
+                  },
+                  "separator": {
+                    "description": "separate tags with the specified character, either comma or space",
+                    "type": "string",
+                    "enum": [
+                      "comma",
+                      "space"
+                    ],
+                    "default": "comma"
+                  },
+                  "customTags": {
+                    "description": "allows custom tags to be entered manually by the user",
+                    "type": "boolean",
+                    "default": true
+                  },
+                  "options": {
+                    "description": "specifies a method or array for predefined options. Set to true to use model get*Field*Options method. Optional",
+                    "type": [
+                      "string",
+                      "array",
+                      "boolean"
+                    ]
+                  },
+                  "useKey": {
+                    "description": "use the key instead of value for saving and reading data",
+                    "type": "boolean",
+                    "default": false
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "taglist"
+                    ]
+                  },
+                  "mode": {
+                    "enum": [
+                      "relation"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "nameFrom": {
+                    "description": "if relation mode is used, a model attribute name for displaying the tag name",
+                    "type": "string",
+                    "default": "name"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "tabs": {
+      "$comment": "https://octobercms.com/docs/backend/forms#form-tab-options",
+      "description": "",
+      "type": "object",
+      "required": [
+        "fields"
+      ],
+      "properties": {
+        "fields": {
+          "$ref": "#/definitions/fields"
+        },
+        "stretch": {
+          "description": "specifies if this tab stretches to fit the parent height",
+          "type": "boolean"
+        },
+        "defaultTab": {
+          "description": "the default tab to assign fields to",
+          "type": "string"
+        },
+        "icons": {
+          "description": "assign icons to tabs using tab names as the key",
+          "type": "object",
+          "patternProperties": {
+            ".+": {
+              "type": "string",
+              "pattern": "^icon-"
+            }
+          }
+        },
+        "lazy": {
+          "description": "array of tabs to be loaded dynamically when clicked",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "cssClass": {
+          "description": "assigns a CSS class to the tab container",
+          "type": "string"
+        },
+        "paneCssClass": {
+          "description": "assigns a CSS class to an individual tab pane. Value is an array, key is tab index or label, value is the CSS class. It can also be specified as a string, in which case the value will be applied to all tabs.",
+          "type": [
+            "object",
+            "string"
+          ],
+          "patternProperties": {
+            ".+": {
+              "description": "key is tab index or label, value is the CSS class",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "datatableColumns": {
+      "type": "object",
+      "patternProperties": {
+        "^[^\\s]*$": {
+          "description": "column name",
+          "type": "object",
+          "properties": {
+            "type": {
+              "description": "defines how this field should be rendered",
+              "type": "string",
+              "enum": [
+                "string",
+                "checkbox",
+                "dropdown",
+                "autocomplete"
+              ]
+            },
+            "readOnly": {
+              "description": "whether this column is read-only",
+              "type": "boolean",
+              "default": false
+            },
+            "title": {
+              "description": "defines the column's title.",
+              "type": "string"
+            },
+            "validation": {
+              "type": "object",
+              "properties": {
+                "float": {
+                  "description": "Validates the data as a float. An optional boolean allowNegative attribute can be provided, allowing for negative float numbers",
+                  "type": "object",
+                  "properties": {
+                    "allowNegative": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "integer": {
+                  "description": "Validates the data as an integer. An optional boolean allowNegative attribute can be provided, allowing for negative integers.",
+                  "type": "object",
+                  "properties": {
+                    "allowNegative": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "length": {
+                  "description": "Validates the data to be of a certain length. An integer min and max attribute must be provided, representing the minimum and maximum number of characters that must be entered.",
+                  "type": "object",
+                  "properties": {
+                    "min": {
+                      "type": "integer"
+                    },
+                    "max": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "regex": {
+                  "description": "Validates the data against a regular expression. A string pattern attribute must be provided, defining the regular expression to test the data against.",
+                  "type": "object",
+                  "properties": {
+                    "pattern": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": {
+                  "description": "Validates that the data must be entered before saving.",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "width": {
+              "type": "integer"
+            }
+          },
+          "anyOf": [
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "dropdown",
+                      "autocomplete"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "options": {
+                    "description": "specifies the AJAX handler that will return the available options, as an array. The array key is used as the value of the option, and the array value is used as the option label.",
+                    "type": "object",
+                    "patternProperties": {
+                      ".+": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "properties": {
+    "fields": {
+      "$ref": "#/definitions/fields"
+    },
+    "tabs": {
+      "description": "Primary tabs",
+      "$ref": "#/definitions/tabs"
+    },
+    "secondaryTabs": {
+      "description": "secondary tabs",
+      "$ref": "#/definitions/tabs"
+    }
+  }
+}

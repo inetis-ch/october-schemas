@@ -1,0 +1,212 @@
+{
+  "title": "JSON schema for OctoberCMS list",
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$comment": "https://octobercms.com/docs/backend/lists#list-columns",
+  "type": "object",
+  "definitions": {
+    "columns": {
+      "type": "object",
+      "patternProperties": {
+        "^[^\\s]*$": {
+          "description": "Model field name",
+          "$comment": "https://octobercms.com/docs/backend/lists#column-options",
+          "type": [
+            "object",
+            "string"
+          ],
+          "properties": {
+            "label": {
+              "description": "a name when displaying the list column to the user",
+              "type": "string"
+            },
+            "type": {
+              "description": "defines how this column should be rendered",
+              "default": "text",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "text",
+                    "number",
+                    "switch",
+                    "datetime",
+                    "date",
+                    "time",
+                    "timesince",
+                    "timetense",
+                    "partial",
+                    "colorpicker"
+                  ]
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "default": {
+              "description": "specifies the default value for the column if value is empty"
+            },
+            "searchable": {
+              "description": "include this column in the list search results",
+              "type": "boolean",
+              "default": false
+            },
+            "invisible": {
+              "description": "specifies if this column is hidden by default",
+              "type": "boolean",
+              "default": false
+            },
+            "sortable": {
+              "description": "specifies if this column can be sorted",
+              "type": "boolean",
+              "default": true
+            },
+            "clickable": {
+              "description": "if set to false, disables the default click behavior when the column is clicked",
+              "type": "boolean",
+              "default": true
+            },
+            "select": {
+              "description": "defines a custom SQL select statement to use for the value",
+              "type": "string"
+            },
+            "valueFrom": {
+              "description": "defines a model attribute to use for the value",
+              "type": "string"
+            },
+            "relation": {
+              "description": "defines a model relationship column",
+              "type": "string"
+            },
+            "useRelationCount": {
+              "description": "use the count of the defined relation as the value for this column",
+              "type": "boolean",
+              "default": false
+            },
+            "cssClass": {
+              "description": "assigns a CSS class to the column container",
+              "type": "string"
+            },
+            "headCssClass": {
+              "description": "assigns a CSS class to the column header container",
+              "type": "string"
+            },
+            "width": {
+              "description": "sets the column width, can be specified in percents (10%) or pixels (50px). There could be a single column without width specified, it will be stretched to take the available space.",
+              "type": "string"
+            },
+            "align": {
+              "description": "specifies the column alignment. Possible values are left, right and center.",
+              "type": "string",
+              "enum": [
+                "left",
+                "right",
+                "center"
+              ]
+            },
+            "permissions": {
+              "description": "the permissions that the current backend user must have in order for the column to be used. Supports either a string for a single permission or an array of permissions of which only one is needed to grant access.",
+              "type": [
+                "string",
+                "array"
+              ]
+            }
+          },
+          "anyOf": [
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "text",
+                      "number"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "format": {
+                    "description": "specify a custom text format following the formatting rules of the PHP sprintf() function",
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "datetime",
+                      "date",
+                      "time",
+                      "timesince",
+                      "timetense"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "ignoreTimezone": {
+                    "description": "display datetime exactly as it is stored, ignores October's and the backend user's specified timezones",
+                    "type": "boolean"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "datetime",
+                      "date",
+                      "time"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "format": {
+                    "description": "specify a custom date format",
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "partial"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "path": {
+                    "description": "partial view. Inside the partial these variables are available: $value is the default cell value, $record is the model used for the cell and $column is the configured class object Backend\\Classes\\ListColumn",
+                    "type": "string",
+                    "examples": [
+                      "~/plugins/acme/blog/models/comments/_content_column.htm"
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "properties": {
+    "columns": {
+      "$ref": "#/definitions/columns"
+    }
+  }
+}
