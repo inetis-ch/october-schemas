@@ -11,9 +11,6 @@
           "description": "Model field name",
           "$comment": "https://octobercms.com/docs/backend/forms#form-field-options",
           "type": "object",
-          "required": [
-            "type"
-          ],
           "properties": {
             "label": {
               "description": "a name when displaying the form field to the user",
