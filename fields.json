@@ -1,5 +1,5 @@
 {
-  "title": "JSON schema for OctoberCMS form fields",
+  "title": "JSON schema for October CMS form fields",
   "$schema": "http://json-schema.org/draft-07/schema",
   "$comment": "https://octobercms.com/docs/backend/forms#form-fields",
   "type": "object",
