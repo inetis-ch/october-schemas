@@ -69,7 +69,7 @@
                 "auto",
                 "left",
                 "right",
-                "storm",
+                "row",
                 "full"
               ],
               "default": "full"
