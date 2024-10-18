@@ -18,6 +18,15 @@ https://raw.githubusercontent.com/inetis-ch/october-schemas/master/columns.json
 ```
 [October CMS documentation](https://octobercms.com/docs/backend/lists#list-columns)
 
+## List config `config_list.yaml`
+> The list configuration is used for creating backend record list
+
+**config_list.yaml schema URL**:
+```
+https://raw.githubusercontent.com/inetis-ch/october-schemas/master/config_list.json
+```
+[October CMS documentation](https://docs.octobercms.com/3.x/extend/lists/list-controller.html)
+
 ---
 
 ## Setup your IDE for autocomplete
