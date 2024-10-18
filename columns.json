@@ -1,7 +1,7 @@
 {
   "title": "JSON schema for OctoberCMS list",
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$comment": "https://octobercms.com/docs/backend/lists#list-columns",
+  "$comment": "https://docs.octobercms.com/3.x/element/list-columns.html",
   "type": "object",
   "definitions": {
     "columns": {
