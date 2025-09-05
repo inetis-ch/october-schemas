@@ -1,7 +1,7 @@
 {
   "title": "JSON schema for OctoberCMS form fields",
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$comment": "https://octobercms.com/docs/backend/forms#form-fields",
+  "$comment": "https://docs.octobercms.com/4.x/element/form-fields.html",
   "type": "object",
   "definitions": {
     "fields": {
@@ -9,7 +9,7 @@
       "patternProperties": {
         "^[^\\s]*$": {
           "description": "Model field name",
-          "$comment": "https://octobercms.com/docs/backend/forms#form-field-options",
+          "$comment": "https://docs.octobercms.com/4.x/element/form-fields.html#field-properties",
           "type": "object",
           "properties": {
             "label": {
@@ -54,7 +54,11 @@
                     "relation",
                     "repeater",
                     "richeditor",
-                    "taglist"
+                    "taglist",
+                    "pagefinder",
+                    "sensitive",
+                    "currency",
+                    "boxes"
                   ]
                 },
                 {
@@ -63,7 +67,7 @@
               ]
             },
             "span": {
-              "description": "aligns the form field to one side. The parameter storm allows you to display the form as a Bootstrap grid, using the cssClass property, for example, cssClass: col-xs-4.",
+              "description": "aligns the form field to one side. Options: auto, left, right, row, full. Default: full.",
               "type": "string",
               "enum": [
                 "auto",
@@ -73,6 +77,10 @@
                 "full"
               ],
               "default": "full"
+            },
+            "spanClass": {
+              "description": "used with the span row property to display the form as a Bootstrap grid, for example, spanClass: col-4",
+              "type": "string"
             },
             "size": {
               "description": "specifies a field size for fields that use it, for example, the textarea field",
@@ -116,6 +124,11 @@
               "description": "assigns a CSS class to the field container",
               "type": "string"
             },
+            "autoFocus": {
+              "description": "flags the field to be focused when the form loads. Default: false",
+              "type": "boolean",
+              "default": false
+            },
             "readOnly": {
               "description": "prevents the field from being modified",
               "type": "boolean"
@@ -158,6 +171,10 @@
                 "array",
                 "string"
               ]
+            },
+            "changeHandler": {
+              "description": "the name of an AJAX handler to call when the field value is changed, optional",
+              "type": "string"
             },
             "trigger": {
               "description": "specify conditions for this field using trigger events",
@@ -265,6 +282,10 @@
                   "type": "string"
                 }
               ]
+            },
+            "order": {
+              "description": "a numerical weight when determining the display order, default value increments at 100 points per field",
+              "type": "number"
             }
           },
           "anyOf": [
@@ -606,26 +627,49 @@
                   },
                   "minDate": {
                     "description": "the minimum/earliest date that can be selected",
-                    "type": "string",
-                    "default": "2000-01-01"
+                    "type": "string"
                   },
                   "maxDate": {
                     "description": "the maximum/latest date that can be selected",
-                    "type": "string",
-                    "default": "2020-12-31"
+                    "type": "string"
+                  },
+                  "yearRange": {
+                    "description": "number of years to show either side, or an array of upper/lower range, example [1900,2015]. Default: 10",
+                    "type": [
+                      "number",
+                      "array"
+                    ],
+                    "default": 10
+                  },
+                  "disableDays": {
+                    "description": "days that cannot be selected, can be a number to represent Sunday (0) to Saturday (6), or a specific date (2024-10-01)",
+                    "type": [
+                      "array",
+                      "string"
+                    ]
                   },
                   "firstDay": {
                     "description": "the first day of the week. Default: 0 (Sunday)",
                     "type": "integer",
                     "default": 0
                   },
-                  "showWeekNumber": {
-                    "description": "show week numbers at head of row",
+                  "twelveHour": {
+                    "description": "display a 12-hour clock for selecting time. Default: false",
                     "type": "boolean",
                     "default": false
                   },
-                  "ignoreTimezone": {
-                    "description": "display datetime exactly as it is stored, ignoring October's and the backend user's specified timezones",
+                  "hoursOnly": {
+                    "description": "allows for selecting hours only while selecting time. Default: false",
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "showWeekNumber": {
+                    "description": "show week numbers at head of row. Default: false",
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "useTimezone": {
+                    "description": "convert the date and time from the backend specified timezone preference",
                     "type": "boolean"
                   }
                 }
@@ -670,15 +714,30 @@
                     "description": "file size in Mb that are accepted by the uploader, optional. Default: from \"upload_max_filesize\" param value",
                     "type": "number"
                   },
+                  "maxFiles": {
+                    "description": "maximum number of files allowed to be uploaded",
+                    "type": "integer"
+                  },
                   "useCaption": {
-                    "description": "allows a title and description to be set for the file",
+                    "description": "allows a title and description to be set for the file. Default: true",
                     "type": "boolean",
                     "default": true
                   },
-                  "attachOnUpload": {
-                    "description": "Automatically attaches the uploaded file on upload if the parent record exists instead of using deferred binding to attach on save of the parent record",
+                  "thumbOptions": {
+                    "description": "additional resize options for generating the thumbnail, or pass false to disable thumb generation",
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "object"
+                      }
+                    ]
+                  },
+                  "deferredBinding": {
+                    "description": "use deferred binding when uploading a file, when available. Disable this to attach the file immediately on upload instead of when saving. Default: true",
                     "type": "boolean",
-                    "default": false
+                    "default": true
                   }
                 }
               }
@@ -1216,13 +1275,141 @@
                   }
                 }
               }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "pagefinder"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "keyFrom": {
+                    "description": "the name of column to use in the relation used for key",
+                    "type": "string",
+                    "default": "id"
+                  },
+                  "nameFrom": {
+                    "description": "the column name to use in the relation used for displaying the name",
+                    "type": "string",
+                    "default": "name"
+                  },
+                  "descriptionFrom": {
+                    "description": "the column name to use in the relation used for displaying a description",
+                    "type": "string",
+                    "default": "description"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "sensitive"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "mode": {
+                    "description": "display mode for the sensitive field",
+                    "type": "string",
+                    "enum": [
+                      "textarea",
+                      "text"
+                    ],
+                    "default": "text"
+                  },
+                  "allowCopy": {
+                    "description": "allow copying of the sensitive value. Default: true",
+                    "type": "boolean",
+                    "default": true
+                  },
+                  "allowGenerate": {
+                    "description": "allow generating a new value. Default: false",
+                    "type": "boolean",
+                    "default": false
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "currency"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "format": {
+                    "description": "provides a display format. Supported values: long, short, null",
+                    "type": "string",
+                    "enum": [
+                      "long",
+                      "short"
+                    ]
+                  },
+                  "fromCode": {
+                    "description": "specify the source currency code",
+                    "type": "string"
+                  },
+                  "toCode": {
+                    "description": "specify the display currency code", 
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "boxes"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "options": {
+                    "description": "define options for the boxes",
+                    "anyOf": [
+                      {
+                        "description": "define box options",
+                        "type": "object",
+                        "patternProperties": {
+                          ".+": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      {
+                        "description": "uses a specific method declared in the model's class",
+                        "type": "string"
+                      }
+                    ]
+                  }
+                }
+              }
             }
           ]
         }
       }
     },
     "tabs": {
-      "$comment": "https://octobercms.com/docs/backend/forms#form-tab-options",
+      "$comment": "https://docs.octobercms.com/4.x/element/form-fields.html#tab-properties",
       "description": "",
       "type": "object",
       "required": [
@@ -1237,8 +1424,17 @@
           "type": "boolean"
         },
         "defaultTab": {
-          "description": "the default tab to assign fields to",
-          "type": "string"
+          "description": "the default tab to assign fields to. Default: Misc",
+          "type": "string",
+          "default": "Misc"
+        },
+        "activeTab": {
+          "description": "selected tab when the form first loads, name or index. Default: 1",
+          "type": [
+            "string",
+            "number"
+          ],
+          "default": 1
         },
         "icons": {
           "description": "assign icons to tabs using tab names as the key",
@@ -1251,11 +1447,25 @@
           }
         },
         "lazy": {
-          "description": "array of tabs to be loaded dynamically when clicked",
+          "description": "array of tabs to be loaded dynamically when clicked. Useful for tabs that contain large amounts of content",
           "type": "array",
           "items": {
             "type": "string"
           }
+        },
+        "identifiers": {
+          "description": "array of custom HTML identifiers for targeting the tab. Useful for showing and hiding tabs using JavaScript",
+          "type": "object",
+          "patternProperties": {
+            ".+": {
+              "type": "string"
+            }
+          }
+        },
+        "linkable": {
+          "description": "determines if the tabs can be linked using URL fragments. Default: true",
+          "type": "boolean",
+          "default": true
         },
         "cssClass": {
           "description": "assigns a CSS class to the tab container",
